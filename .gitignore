@@ -1,0 +1,11 @@
+sam-frailejones2.ipynb
+visualizar_qgis.qgz
+
+*.aux.xml
+
+**/dataset/
+
+*.tif
+
+/archive
+geospatial_dl_pipeline copy.ipynb
