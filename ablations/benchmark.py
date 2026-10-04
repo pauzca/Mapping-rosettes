@@ -29,8 +29,9 @@ def network(predictor):
 
 
 @torch.no_grad()
-def gflops(predictor, device):
-    net, x = network(predictor).eval(), torch.rand(1, 3, 512, 512, device=device)
+def gflops(predictor):
+    net = network(predictor).eval()
+    x = torch.rand(1, 3, 512, 512, device=next(net.parameters()).device)  # Ultralytics moves to GPU lazily
     with FlopCounterMode(display=False) as fc:
         net(x) if isinstance(predictor, UltralyticsPredictor) else net.predict(x)
     return fc.get_total_flops() / 1e9
@@ -64,7 +65,7 @@ def main():
         name, spec = item.split("=", 1)
         pred = load_predictor(spec, args.device)
         res[name] = dict(spec=spec, params_M=round(sum(p.numel() for p in network(pred).parameters()) / 1e6, 2),
-                         gflops_512=round(gflops(pred, args.device), 1),
+                         gflops_512=round(gflops(pred), 1),
                          ms_fp32=round(latency_ms(pred, img, args.runs, half=False), 2),
                          ms_fp16=round(latency_ms(pred, img, args.runs, half=True), 2),
                          gpu=torch.cuda.get_device_name(0))

@@ -58,9 +58,11 @@ def _rtdetr(num_classes):
 
     if not num_classes:
         return RTDetrForObjectDetection.from_pretrained(HF_RTDETR)
+    # The new class heads are re-initialised with prior 1 / (num_labels + 1) unless a prior is given;
+    # with one class that is 0.5 (bias 0) and the classifier never recovers. RT-DETR uses 0.01.
     return RTDetrForObjectDetection.from_pretrained(
         HF_RTDETR, num_labels=num_classes, id2label={0: "frailejon"}, label2id={"frailejon": 0},
-        ignore_mismatched_sizes=True)
+        initializer_bias_prior_prob=0.01, ignore_mismatched_sizes=True)
 
 
 class TorchvisionAdapter(nn.Module):
@@ -96,10 +98,20 @@ class RTDetrAdapter(nn.Module):
                                   b[:, 2] - b[:, 0], b[:, 3] - b[:, 1]], 1)
             labels.append({"class_labels": torch.zeros(len(b), dtype=torch.int64, device=b.device),
                            "boxes": cxcywh})
-        out = self.model(pixel_values=imgs, labels=labels)
-        parts = {k: v.detach() for k, v in (out.loss_dict or {}).items()
-                 if k in ("loss_vfl", "loss_bbox", "loss_giou")}
-        return out.loss, parts
+        # transformers 5.12 matches the last decoder layer including the denoising queries (logits are not split
+        # before the main loss), so ground truth gets matched to its own noised copies and the real queries learn
+        # "background". Split them here and call the library's loss with the main outputs fixed.
+        from transformers.loss.loss_rt_detr import RTDetrForObjectDetectionLoss
+
+        out = self.model.model(pixel_values=imgs, labels=labels)
+        meta = out.denoising_meta_values
+        cls, box = out.intermediate_logits, out.intermediate_reference_points
+        n_dn = meta["dn_num_split"][0] if meta is not None else 0
+        loss, loss_dict, _ = RTDetrForObjectDetectionLoss(
+            cls[:, -1, n_dn:], labels, imgs.device, box[:, -1, n_dn:], self.model.config, cls, box,
+            enc_topk_logits=out.enc_topk_logits, enc_topk_bboxes=out.enc_topk_bboxes, denoising_meta_values=meta)
+        parts = {k: v.detach() for k, v in loss_dict.items() if k in ("loss_vfl", "loss_bbox", "loss_giou")}
+        return loss, parts
 
     @torch.no_grad()
     def predict(self, imgs):

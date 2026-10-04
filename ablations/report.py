@@ -68,6 +68,73 @@ def to_markdown(df, cols):
     return "\n".join(lines)
 
 
+TEX_NAMES = {
+    "yolo11s": "YOLOv11s", "yolov8s": "YOLOv8s", "yolo11m": "YOLOv11m", "rtdetr_l": "RT-DETR-L",
+    "rtdetr_r18": "RT-DETR-R18", "frcnn_mnv3": "Faster R-CNN (MobileNetV3)", "frcnn_r50": "Faster R-CNN (ResNet-50)",
+    "deepforest": "DeepForest",
+}
+BLOCKS = [  # (mosaic key, label in the Resolución column, label in the Mosaicos column, regimes shown)
+    ("dic1cm", r"\textbf{Alta} \\ (GSD $\approx$ 1 cm)", "Diciembre", ["mixed"]),
+    ("dic3cm", r"\textbf{Baja} \\ (GSD $\approx$ 3 cm)", r"Diciembre \\ GSD 3.6 cm", ["mixed", "lowres"]),
+]
+
+
+def latex_table(eval_root, rule="fixed", ckpt="last"):
+    """Fine-tuned results in the layout of the paper's Cuadro 4, plus parameters and throughput."""
+    i = 0 if rule == "fixed" else 1
+    bench = {}
+    for f in Path(eval_root).glob("*/benchmark.json"):
+        bench |= json.loads(f.read_text())
+
+    def metrics(regime, model, mosaic):
+        f = Path(eval_root) / regime / f"{model}_{ckpt}" / f"{mosaic}_metrics.json"
+        if not f.exists():
+            return None
+        m = json.loads(f.read_text())["at_iou50"][i]
+        return [m["RF1"], m["RP"], m["RR"]]
+
+    def mr(n, text):
+        text = rf"\shortstack{{{text}}}" if "\\" in text else text
+        return rf"\multirow{{{n}}}{{*}}{{{text}}}" if n > 1 else text
+
+    lines = [r"\begin{table}[ht]", r"\centering", r"\small", r"\renewcommand{\arraystretch}{1.3}",
+             r"\begin{tabular}{|l|l|l|c|c|c|c|c|}", r"\hline",
+             r"\textbf{Resolución} & \textbf{Modelo} & \textbf{Mosaicos} & \textbf{RF1} & \textbf{RP} & \textbf{RR}"
+             r" & \textbf{Parám. (M)} & \textbf{Teselas/s} \\", r"\hline"]
+    for mosaic, res_label, mos_label, regimes in BLOCKS:
+        rows = [(model, regime, metrics(regime, model, mosaic)) for model in TEX_NAMES for regime in regimes]
+        best = [max((r[2][k] for r in rows if r[2]), default=None) for k in range(3)]
+        n = len(rows)
+        for j, (model, regime, m) in enumerate(rows):
+            first_of_model = regime == regimes[0]
+            name = TEX_NAMES[model] + ("*" if regime == "lowres" else "")
+            cells = ["--"] * 3 if m is None else [
+                rf"\textbf{{{v:.3f}}}" if v == best[k] else f"{v:.3f}" for k, v in enumerate(m)]
+            b = bench.get(model)
+            span = len(regimes)
+            params = (mr(span, f"{b['params_M']:.1f}") if b else "--") if first_of_model else ""
+            tps = (mr(span, f"{1000 / b['ms_fp32']:.0f}") if b else "--") if first_of_model else ""
+            lead = [mr(n, res_label), name, mr(n, mos_label)] if j == 0 else ["", name, ""]
+            lines.append(" & ".join(lead + cells + [params, tps]) + r" \\")
+            last_of_model = regime == regimes[-1]
+            if j == n - 1:
+                lines.append(r"\hline")
+            elif last_of_model:
+                lines.append(r"\cline{2-2} \cline{4-8}")
+            else:
+                lines.append(r"\cline{2-2} \cline{4-6}")
+    lines += [r"\end{tabular}",
+              r"\caption{Ablación de modelos de detección de frailejones. Todos los modelos se ajustaron con los mismos"
+              r" datos, aumentaciones y número de iteraciones (22\,400 iteraciones, lote de 16, teselas de 512\,px) y se"
+              r" reporta el checkpoint final. RF1, RP y RR se calculan a nivel de mosaico con el protocolo del Cuadro~4"
+              r" (IoU $\geq$ 0.5, puntaje $\geq$ 0.5). * simboliza que el conjunto de datos de entrenamiento contenía"
+              r" únicamente imágenes de baja resolución. Parám.: millones de parámetros. Teselas/s: teselas de"
+              r" 512$\times$512\,px procesadas por segundo en una NVIDIA T4 (lote 1, FP32, incluye pre y"
+              r" posprocesamiento). YOLOv11s y RT-DETR-L corresponden a YOLOv11 y RT-DETR del Cuadro~4.}",
+              r"\label{tab:ablacion_deteccion}", r"\end{table}"]
+    return "\n".join(lines) + "\n"
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--eval-root", default="outputs/eval")
@@ -102,6 +169,7 @@ def main():
             + "\n\n".join(sections) + "\n")
     stem = Path(args.eval_root) / f"report_{args.rule}_{args.ckpt}"
     stem.with_suffix(".md").write_text(text)
+    stem.with_suffix(".tex").write_text(latex_table(args.eval_root, args.rule, args.ckpt))
     df.drop(columns="order").to_csv(stem.with_suffix(".csv"), index=False)
     print(text)
 
