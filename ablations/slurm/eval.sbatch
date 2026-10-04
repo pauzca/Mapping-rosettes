@@ -22,8 +22,8 @@ export HF_HOME=/disk/cache/huggingface TORCH_HOME=/disk/cache/torch MPLCONFIGDIR
 REGIME=$1; shift
 DATA_ROOT=/disk/guille/mapping-rosettes/data
 case $REGIME in
-    mixed)  DATA=$DATA_ROOT/mixed-resolution/data.yaml ;;
-    lowres) DATA=$DATA_ROOT/low-resolution/data.yaml ;;
+    mixed)  DATA=$DATA_ROOT/kaggle_export/mixed-resolution-frailejones/dataset/data.yaml ;;
+    lowres) DATA=$DATA_ROOT/kaggle_export/low-resolution-frailejones-detection/dataset/data.yaml ;;
     *) echo "unknown regime $REGIME"; exit 1 ;;
 esac
 
@@ -31,5 +31,5 @@ cd /home/guille/Mapping-rosettes
 for item in "$@"; do
     NAME=${item%%=*}; SPEC=${item#*=}
     echo "=== $NAME ($SPEC)"
-    python -m ablations.evaluate_model --model "$SPEC" --data $DATA --out outputs/eval/$REGIME/$NAME
+    python -m ablations.evaluate_model --model "$SPEC" --data $DATA --out outputs/eval_v2/$REGIME/$NAME
 done

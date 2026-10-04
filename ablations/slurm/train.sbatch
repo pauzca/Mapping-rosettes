@@ -25,12 +25,12 @@ MODEL=$1; REGIME=$2; SEED=${3:-123}
 shift 2; if [ $# -gt 0 ]; then shift; fi
 DATA_ROOT=/disk/guille/mapping-rosettes/data
 case $REGIME in
-    mixed)  DATA=$DATA_ROOT/mixed-resolution/data.yaml ;;
-    lowres) DATA=$DATA_ROOT/low-resolution/data.yaml ;;
+    mixed)  DATA=$DATA_ROOT/kaggle_export/mixed-resolution-frailejones/dataset/data.yaml ;;
+    lowres) DATA=$DATA_ROOT/kaggle_export/low-resolution-frailejones-detection/dataset/data.yaml ;;
     *) echo "unknown regime $REGIME"; exit 1 ;;
 esac
 PRE=/disk/guille/mapping-rosettes/models/pretrained
-OUT=${OUT_ROOT:-/home/guille/Mapping-rosettes/outputs/train}/$REGIME/${MODEL}_s$SEED
+OUT=${OUT_ROOT:-/home/guille/Mapping-rosettes/outputs/train_v2}/$REGIME/${MODEL}_s$SEED
 
 cd /home/guille/Mapping-rosettes
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
