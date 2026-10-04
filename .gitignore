@@ -9,3 +9,9 @@ visualizar_qgis.qgz
 
 /archive
 geospatial_dl_pipeline copy.ipynb
+# data and results live in /disk/guille/mapping-rosettes (symlinks)
+/data
+/outputs
+# downloaded by Ultralytics' AMP check
+/yolo11n.pt
+__pycache__/
