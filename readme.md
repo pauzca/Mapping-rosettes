@@ -15,6 +15,9 @@ secret). It installs the exact environment (`requirements.txt`), downloads the K
 (tiles, checkpoints and orthomosaics), evaluates the 16 checkpoints with their fixed validation-selected
 thresholds (`ablations/thresholds.json`) and checks every value against `ablations/expected_results.json`.
 
+While the repository is private, add a GitHub token with read access to it as the `GITHUB_TOKEN` secret
+(Colab: key icon on the left; Kaggle: *Add-ons → Secrets*) so the notebook can clone it.
+
 ## Contents
 
 | Path | What it is |
