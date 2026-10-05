@@ -22,19 +22,26 @@ TILES_ROOT = Path(os.environ.get("ROSETTES_TILES", "outputs/tiles"))
 
 def tile_mosaic(mosaic, tile=512, overlap=0.2, gsd=0.0136):
     """Tiles exactly as the paper's pipeline: geodataset RasterTilerizer (reprojects geographic rasters
-    to UTM and resamples to gsd). Cached per mosaic and setting; a file lock avoids concurrent writers."""
-    import fcntl
+    to UTM and resamples to gsd). Cached per mosaic and setting; a file lock avoids concurrent writers.
 
-    from geodataset.tilerize import RasterTilerizer
+    Each mosaic is tiled in its own process: geodataset keeps state between rasters, and tiling the 1 cm
+    mosaic after the 3.6 cm one in the same process produces tiles with the wrong content.
+    """
+    import fcntl
+    import subprocess
+    import sys
 
     out = TILES_ROOT / f"{Path(mosaic).stem}_t{tile}_o{overlap}_gr{gsd or 'native'}"
     out.mkdir(parents=True, exist_ok=True)
     with open(out / ".lock", "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         if not (out / "done").exists():
-            RasterTilerizer(raster_path=mosaic, output_path=out, tile_size=tile, tile_overlap=overlap,
-                            ground_resolution=gsd or None, ignore_black_white_alpha_tiles_threshold=0.8,
-                            temp_dir=out / "tmp").generate_tiles()
+            subprocess.run([sys.executable, "-c",
+                            "import sys; from geodataset.tilerize import RasterTilerizer; "
+                            "RasterTilerizer(raster_path=sys.argv[1], output_path=sys.argv[2], tile_size=int(sys.argv[3]), "
+                            "tile_overlap=float(sys.argv[4]), ground_resolution=float(sys.argv[5]) or None, "
+                            "ignore_black_white_alpha_tiles_threshold=0.8, temp_dir=sys.argv[2] + '/tmp').generate_tiles()",
+                            str(mosaic), str(out), str(tile), str(overlap), str(gsd or 0)], check=True)
             (out / "done").touch()
     return sorted(p for p in out.rglob("*.tif") if "tiles" in p.parts)
 
