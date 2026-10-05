@@ -49,6 +49,10 @@ def main():
     token = os.environ.get("GITHUB_TOKEN")
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
+    if all((out / name / "dataset" / "data.yaml").exists()
+           for name in ("mixed-resolution-frailejones", "low-resolution-frailejones-detection")):
+        print(f"data already present in {out}")
+        return
 
     release = json.load(request(f"https://api.github.com/repos/{args.repo}/releases/tags/{args.tag}", token))
     assets = {a["name"]: a for a in release["assets"]}
