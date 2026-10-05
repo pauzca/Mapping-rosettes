@@ -8,8 +8,9 @@ set and per orthomosaic on Diciembre 1 cm and 3.6 cm.
 
 ## Reproduce the tables
 
-Open [`reproduce_detection_ablation.ipynb`](reproduce_detection_ablation.ipynb) in Google Colab with a GPU and run
-all cells. It installs the exact environment (`requirements.txt`), downloads the Kaggle datasets
+Run [`reproduce_detection_ablation.ipynb`](reproduce_detection_ablation.ipynb) on **Kaggle** (attach both datasets as
+inputs, GPU T4 accelerator, internet on) or **Google Colab** (T4 GPU, Kaggle API token as the `KAGGLE_API_TOKEN`
+secret). It installs the exact environment (`requirements.txt`), downloads the Kaggle datasets
 `paulauzcategui/mixed-resolution-frailejones` and `paulauzcategui/low-resolution-frailejones-detection`
 (tiles, checkpoints and orthomosaics), evaluates the 16 checkpoints with their fixed validation-selected
 thresholds (`ablations/thresholds.json`) and checks every value against `ablations/expected_results.json`.
