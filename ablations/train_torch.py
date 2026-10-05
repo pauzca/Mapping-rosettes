@@ -6,8 +6,7 @@ warmup length, per-epoch linear LR decay, ModelEMA, AMP and checkpoint selection
 mAP50-95. Only the optimizer and base LR follow each architecture's reference recipe (recipe.OPTIM).
 
 Example:
-    python -m ablations.train_torch --arch frcnn_r50 \
-        --data /disk/guille/mapping-rosettes/data/mixed-resolution/data.yaml --out outputs/train/mixed/frcnn_r50_s123
+    python -m ablations.train_torch --arch frcnn_r50 --data <dataset>/data.yaml --out outputs/train/mixed/frcnn_r50
 """
 import argparse
 import csv

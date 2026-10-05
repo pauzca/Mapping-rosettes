@@ -6,8 +6,8 @@ Ultralytics-equivalent metrics (ablations.tile_metrics), overall and per source 
 validation tiles is stored as the model's operating threshold for the mosaics.
 
 Example:
-    python -m ablations.val_tiles --model run:outputs/train/mixed/frcnn_r50_s123 \
-        --data /disk/guille/mapping-rosettes/data/mixed-resolution/data.yaml --out outputs/eval/mixed/frcnn_r50_s123/val_tiles.json
+    python -m ablations.val_tiles --model run:outputs/train/mixed/frcnn_r50 \
+        --data <dataset>/data.yaml --out outputs/eval/mixed/frcnn_r50/val_tiles.json
 """
 import argparse
 import json

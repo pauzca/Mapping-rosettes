@@ -3,8 +3,8 @@
 Early stopping is disabled (patience=0) so every model runs the same 200 epochs / 22,400 iterations.
 
 Example:
-    python -m ablations.train_ultralytics --weights /disk/guille/mapping-rosettes/models/pretrained/yolov8s.pt \
-        --data /disk/guille/mapping-rosettes/data/mixed-resolution/data.yaml --out outputs/train/mixed/yolov8s_s123
+    python -m ablations.train_ultralytics --weights yolov8s.pt \
+        --data <dataset>/data.yaml --out outputs/train/mixed/yolov8s
 """
 import argparse
 import json

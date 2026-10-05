@@ -1,17 +1,16 @@
-# Evaluation mosaics, grouped like the paper's results table (Resolución / Mosaicos).
-# Paths are relative to the repository root; a mosaic is skipped while its raster is missing.
-# All mosaics are tiled at the training ground resolution (gsd, m/px) with 512 px tiles and 20% overlap.
+# Evaluation orthomosaics, grouped like the paper's results table (Resolución / Mosaicos).
+# raster: path relative to --mosaics-root (the "mosaics" folder of the mixed-resolution Kaggle dataset);
+# gt: path relative to the repository root. Tiled at gsd (m/px), 512 px tiles, 20% overlap.
 dic3cm:
   name: Diciembre GSD 3.6 cm
   resolution: Baja
-  raster: data/mosaics/rosettes_gsd_3cm_mosaic.tif
+  raster: rosettes_gsd_3cm_mosaic.tif
   gt: mosaics_val/rosettes_gsd_3cm/rosettes_gsd_3cm_boxes.gpkg
   gsd: 0.0136
 dic1cm:
   name: Diciembre
   resolution: Alta
-  raster: data/mosaics/rosettes_gsd_1cm_mosaic.tif
+  raster: rosettes_gsd_1cm_mosaic.tif
   gt: mosaics_val/rosettes_gsd_1cm/rosettes_gsd_1cm_boxes.gpkg
   layer: rosettes_gsd_1cm_boxes
   gsd: 0.0136
-# agosto / junio2025: add raster + ground truth when available

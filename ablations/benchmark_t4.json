@@ -1,0 +1,66 @@
+{
+  "yolo11s": {
+    "spec": "ultralytics:outputs/train/mixed/yolo11s_s123/weights/last.pt",
+    "params_M": 9.43,
+    "gflops_512": 13.7,
+    "ms_fp32": 12.01,
+    "ms_fp16": 15.91,
+    "gpu": "Tesla T4"
+  },
+  "yolov8s": {
+    "spec": "ultralytics:outputs/train/mixed/yolov8s_s123/weights/last.pt",
+    "params_M": 11.14,
+    "gflops_512": 18.2,
+    "ms_fp32": 9.6,
+    "ms_fp16": 12.47,
+    "gpu": "Tesla T4"
+  },
+  "yolo11m": {
+    "spec": "ultralytics:outputs/train/mixed/yolo11m_s123/weights/last.pt",
+    "params_M": 20.05,
+    "gflops_512": 43.3,
+    "ms_fp32": 17.74,
+    "ms_fp16": 20.07,
+    "gpu": "Tesla T4"
+  },
+  "rtdetr_l": {
+    "spec": "ultralytics:outputs/train/mixed/rtdetr_l_s123/weights/last.pt",
+    "params_M": 32.81,
+    "gflops_512": 71.6,
+    "ms_fp32": 40.53,
+    "ms_fp16": 46.42,
+    "gpu": "Tesla T4"
+  },
+  "rtdetr_r18": {
+    "spec": "run:outputs/train/mixed/rtdetr_r18_s123:last",
+    "params_M": 20.07,
+    "gflops_512": 40.0,
+    "ms_fp32": 31.0,
+    "ms_fp16": 40.66,
+    "gpu": "Tesla T4"
+  },
+  "frcnn_mnv3": {
+    "spec": "run:outputs/train/mixed/frcnn_mnv3_s123:last",
+    "params_M": 18.93,
+    "gflops_512": 3.7,
+    "ms_fp32": 23.08,
+    "ms_fp16": 31.56,
+    "gpu": "Tesla T4"
+  },
+  "frcnn_r50": {
+    "spec": "run:outputs/train/mixed/frcnn_r50_s123:last",
+    "params_M": 41.3,
+    "gflops_512": 126.1,
+    "ms_fp32": 48.19,
+    "ms_fp16": 38.45,
+    "gpu": "Tesla T4"
+  },
+  "deepforest": {
+    "spec": "run:outputs/train/mixed/deepforest_s123:last",
+    "params_M": 32.15,
+    "gflops_512": 103.6,
+    "ms_fp32": 38.68,
+    "ms_fp16": 38.91,
+    "gpu": "Tesla T4"
+  }
+}

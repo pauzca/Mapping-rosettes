@@ -51,6 +51,14 @@ multispectral drone imagery*.
 - File names: `<source>_tile_<x>_<y>.png`, where x, y are the tile origin in pixels of the source orthomosaic.
 - `data.yaml` works directly with Ultralytics; `splits.csv` lists the split of every original tile.
 
+## Checkpoints and mosaics
+- `checkpoints/<model>/weights/best.pt`: the detectors of the ablation trained on this dataset (best
+  validation mAP50-95). Ultralytics checkpoints (yolo11s, yolov8s, yolo11m, rtdetr_l) load with
+  `ultralytics`; the others (rtdetr_r18, frcnn_mnv3, frcnn_r50, deepforest) with `ablations.models.load_run`
+  from the code repository, which also reads `args.json`.
+- `mosaics/` (mixed-resolution dataset only): the Diciembre 1 cm and 3.6 cm evaluation orthomosaics used
+  for the mosaic-level table.
+
 ## Splits
 - **train / val**: the original training tiles. About 20% of the plants of each source orthomosaic were
   moved to val as whole spatial blocks (8 x 8 tile positions); training tiles overlapping a val tile were
@@ -71,6 +79,10 @@ def main():
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--only-test", action="store_true", help="rewrite only the test split, README and manifest")
+    ap.add_argument("--checkpoints", type=Path, default=None,
+                    help="training root with <regime>/<model>_s123/ runs; adds checkpoints/<model>/ to each dataset")
+    ap.add_argument("--mosaics", type=Path, nargs="*", default=[],
+                    help="evaluation orthomosaics to add under mosaics/ (mixed-resolution dataset only)")
     args = ap.parse_args()
     man = pd.read_csv(MANIFEST)
     for regime, info in DATASETS.items():
@@ -91,6 +103,17 @@ def main():
             "train: train/images\nval: val/images\ntest: test/images\nnames:\n  0: frailejon\n")
         man.to_csv(root / "splits.csv", index=False)
         (root / "README.md").write_text(readme(info, man))
+        if args.checkpoints:
+            for run in sorted((args.checkpoints / regime).glob("*_s123")):
+                dst = root / "checkpoints" / run.name.removesuffix("_s123")
+                (dst / "weights").mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(run / "weights" / "best.pt", dst / "weights" / "best.pt")
+                if (run / "results.csv").exists() and not (run / "args.yaml").exists():  # ablations.train_torch run
+                    shutil.copyfile(run / "args.json", dst / "args.json")
+        if args.mosaics and regime == "mixed":
+            (root / "mosaics").mkdir(exist_ok=True)
+            for m in args.mosaics:
+                shutil.copyfile(m, root / "mosaics" / m.name)
         (root / "dataset-metadata.json").write_text(json.dumps(
             {"id": f"paulauzcategui/{info['slug']}", "title": info["title"], "licenses": [{"name": "unknown"}]},
             indent=2))

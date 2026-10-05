@@ -7,7 +7,7 @@ Table 2 (complementary): mosaic-level RP / RR / RF1 on the Diciembre 1 cm and 3.
 Both add parameters and throughput (512 px tiles per second, T4, batch 1, FP32).
 
 Example:
-    python -m ablations.tables --eval-root outputs/eval_v2 --bench outputs/eval/mixed/benchmark.json
+    python -m ablations.tables --eval-root outputs/eval
 """
 import argparse
 import json
@@ -130,8 +130,9 @@ def mosaic_table(R):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--eval-root", default="outputs/eval_v2")
-    ap.add_argument("--bench", default="outputs/eval/mixed/benchmark.json")
+    ap.add_argument("--eval-root", default="outputs/eval")
+    ap.add_argument("--bench", default=str(Path(__file__).with_name("benchmark_t4.json")),
+                    help="params and latency measured on a Tesla T4 (ablations.benchmark)")
     args = ap.parse_args()
     R = Results(args.eval_root, args.bench)
     for name, tex in (("tabla_teselas", tile_table(R)), ("tabla_mosaicos", mosaic_table(R))):

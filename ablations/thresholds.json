@@ -1,0 +1,22 @@
+{
+  "mixed": {
+    "deepforest": 0.40641,
+    "frcnn_mnv3": 0.61461,
+    "frcnn_r50": 0.86787,
+    "rtdetr_l": 0.6016,
+    "rtdetr_r18": 0.58258,
+    "yolo11m": 0.40941,
+    "yolo11s": 0.37638,
+    "yolov8s": 0.37037
+  },
+  "lowres": {
+    "deepforest": 0.38438,
+    "frcnn_mnv3": 0.57958,
+    "frcnn_r50": 0.86286,
+    "rtdetr_l": 0.57257,
+    "rtdetr_r18": 0.57858,
+    "yolo11m": 0.36136,
+    "yolo11s": 0.4044,
+    "yolov8s": 0.36036
+  }
+}
