@@ -10,13 +10,10 @@ set and per orthomosaic on Diciembre 1 cm and 3.6 cm.
 
 Run [`reproduce_detection_ablation.ipynb`](reproduce_detection_ablation.ipynb) on **Kaggle** (attach both datasets as
 inputs, GPU T4 accelerator, internet on) or **Google Colab** (T4 GPU, Kaggle API token as the `KAGGLE_API_TOKEN`
-secret), in about 15–20 minutes. It keeps the platform's PyTorch, installs only the detection packages,
-uses the Kaggle datasets `paulauzcategui/mixed-resolution-frailejones` and
-`paulauzcategui/low-resolution-frailejones-detection` (tiles, checkpoints and orthomosaics), evaluates the 16
-checkpoints with their fixed validation-selected thresholds (`ablations/thresholds.json`) and compares every
-value with `ablations/expected_results.json` (tolerance 0.005, since another PyTorch / CUDA build can flip a
-detection right at a threshold). An optional section installs the exact environment (`requirements.txt`,
-Python 3.12) and checks for an exact match.
+secret). It installs the exact environment (`requirements.txt`), downloads the Kaggle datasets
+`paulauzcategui/mixed-resolution-frailejones` and `paulauzcategui/low-resolution-frailejones-detection`
+(tiles, checkpoints and orthomosaics), evaluates the 16 checkpoints with their fixed validation-selected
+thresholds (`ablations/thresholds.json`) and checks every value against `ablations/expected_results.json`.
 
 ## Contents
 
