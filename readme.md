@@ -8,17 +8,14 @@ set and per orthomosaic on Diciembre 1 cm and 3.6 cm.
 
 ## Reproduce the tables
 
-Run [`reproduce_detection_ablation.ipynb`](reproduce_detection_ablation.ipynb) on **Google Colab** (T4 GPU) or
-**Kaggle** (attach both datasets as inputs, GPU T4 accelerator, internet on). It installs the exact environment
-(`requirements.txt`), gets the test tiles, checkpoints and orthomosaics (GitHub release `ablation-v1`, or the
-Kaggle datasets `paulauzcategui/mixed-resolution-frailejones` and
-`paulauzcategui/low-resolution-frailejones-detection` when run on Kaggle), evaluates the 16 checkpoints with
-their fixed validation-selected thresholds (`ablations/thresholds.json`) and checks every value against
+Run [`reproduce_detection_ablation.ipynb`](reproduce_detection_ablation.ipynb) on **Google Colab** with a T4 GPU
+(about 20–30 minutes). It installs the environment of the results (`requirements.txt`), downloads the test
+tiles, checkpoints and orthomosaics from the GitHub release `ablation-v1`, evaluates the 16 checkpoints with
+their fixed validation-selected thresholds (`ablations/thresholds.json`) and compares every value with
 `ablations/expected_results.json`.
 
-While the repository is private, add a GitHub token with read access to it as the `GITHUB_TOKEN` secret
-(Colab: key icon on the left; Kaggle: *Add-ons → Secrets*); the notebook uses it to clone the repository and
-to download the release.
+While the repository is private, add a GitHub token with read access to it as the `GITHUB_TOKEN` secret in Colab
+(key icon on the left); the notebook uses it to clone the repository and to download the release.
 
 ## Contents
 
@@ -30,7 +27,7 @@ to download the release.
 | `ablations/detect.py`, `evaluate_detection.py`, `geo.py` | mosaic-level protocol (geodataset tiles, global NMS, RP / RR / RF1) |
 | `ablations/tables.py`, `check.py` | LaTeX tables and exact comparison with the published values |
 | `ablations/train_ultralytics.py`, `train_torch.py`, `recipe.py` | training with the shared recipe (same data, augmentation and iterations for every model) |
-| `ablations/make_splits.py`, `export_kaggle.py`, `splits.csv` | how the train / val / test splits and the Kaggle datasets were built |
+| `ablations/make_splits.py`, `export_kaggle.py`, `splits.csv` | how the train / val / test splits were built and packaged |
 | `ablations/fetch.py` | downloads the reproduction data from the GitHub release |
 | `ablations/benchmark.py`, `benchmark_t4.json` | parameters and throughput (Tesla T4) |
 | `mosaics_val/` | ground truth of the Diciembre 1 cm and 3.6 cm orthomosaics |
@@ -45,7 +42,7 @@ score threshold of each model is the F1-optimal one on val.
 
 ## Retraining
 
-Training is not part of the notebook (about 55 GPU-hours on a Tesla T4). With the datasets downloaded:
+Training is not part of the notebook (about 55 GPU-hours on a Tesla T4). With the full datasets (train / val / test):
 
 ```bash
 python -m ablations.train_ultralytics --weights yolo11s.pt --data <dataset>/data.yaml --out outputs/train/mixed/yolo11s
