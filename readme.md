@@ -8,15 +8,17 @@ set and per orthomosaic on Diciembre 1 cm and 3.6 cm.
 
 ## Reproduce the tables
 
-Run [`reproduce_detection_ablation.ipynb`](reproduce_detection_ablation.ipynb) on **Kaggle** (attach both datasets as
-inputs, GPU T4 accelerator, internet on) or **Google Colab** (T4 GPU, Kaggle API token as the `KAGGLE_API_TOKEN`
-secret). It installs the exact environment (`requirements.txt`), downloads the Kaggle datasets
-`paulauzcategui/mixed-resolution-frailejones` and `paulauzcategui/low-resolution-frailejones-detection`
-(tiles, checkpoints and orthomosaics), evaluates the 16 checkpoints with their fixed validation-selected
-thresholds (`ablations/thresholds.json`) and checks every value against `ablations/expected_results.json`.
+Run [`reproduce_detection_ablation.ipynb`](reproduce_detection_ablation.ipynb) on **Google Colab** (T4 GPU) or
+**Kaggle** (attach both datasets as inputs, GPU T4 accelerator, internet on). It installs the exact environment
+(`requirements.txt`), gets the test tiles, checkpoints and orthomosaics (GitHub release `ablation-v1`, or the
+Kaggle datasets `paulauzcategui/mixed-resolution-frailejones` and
+`paulauzcategui/low-resolution-frailejones-detection` when run on Kaggle), evaluates the 16 checkpoints with
+their fixed validation-selected thresholds (`ablations/thresholds.json`) and checks every value against
+`ablations/expected_results.json`.
 
 While the repository is private, add a GitHub token with read access to it as the `GITHUB_TOKEN` secret
-(Colab: key icon on the left; Kaggle: *Add-ons → Secrets*) so the notebook can clone it.
+(Colab: key icon on the left; Kaggle: *Add-ons → Secrets*); the notebook uses it to clone the repository and
+to download the release.
 
 ## Contents
 
@@ -29,6 +31,7 @@ While the repository is private, add a GitHub token with read access to it as th
 | `ablations/tables.py`, `check.py` | LaTeX tables and exact comparison with the published values |
 | `ablations/train_ultralytics.py`, `train_torch.py`, `recipe.py` | training with the shared recipe (same data, augmentation and iterations for every model) |
 | `ablations/make_splits.py`, `export_kaggle.py`, `splits.csv` | how the train / val / test splits and the Kaggle datasets were built |
+| `ablations/fetch.py` | downloads the reproduction data from the GitHub release |
 | `ablations/benchmark.py`, `benchmark_t4.json` | parameters and throughput (Tesla T4) |
 | `mosaics_val/` | ground truth of the Diciembre 1 cm and 3.6 cm orthomosaics |
 
